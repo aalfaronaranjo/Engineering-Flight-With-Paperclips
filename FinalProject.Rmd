@@ -1,0 +1,307 @@
+---
+title: "Engineering Flight With Paperclips"
+author: "Alexis Alfaro Naranjo"
+date: "2025-06-02"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Scientists have long taken interest in the principles of flight and the factors that can have an effect on how objects move through the air. Aerodynamics is defined as the study of how air interacts with solid objects. This field of study is important for fields such as aerospace engineering. While professional scientific applications often involve more complex simulations and testing, a simplified model such as that of a paper airplane can still provide meaningful insight on the principles of aerodynamics. The Article, Recent progress in flapping wing aerodynamics and aeroelasticity by W. Shyy et. al., highlights how small changes in the wing structure and motion can have significant effects on flight performance(W. Shyy et. al., 2010). This idea is also included in an article by Seymour Simon, it is discussed how a different paper airplane shapes and tweaks affect the aerodynamics of a paper airplane.The author provides tutorials on making different types of airplanes and shows us the different types of tweaks that we can make to the paper airplanes and how that would affect the distance that the paper airplane travels(Seymour Simon, 1971). Another article, On the Aerodynamics of Paper Airplanes by Jorg Schluter et. al discusses the aerodynamic features of paper airplanes. There is a discussion on how wingspan, length, and other factors affect the distance that a paper airplane travels(Jorg Schluter et. al,2012). While these studies explore the structural differences affect performance, people have long debated whether or not a paperclip affects the aerodynamics of a paper airplane on a statistically significant level. The goal of this study is to extend what we were studying in Lab 5. The goal in lab 5 was to determine if a paperclip will make a paper plane fly further and if the location of the paperclip on the paper airplane makes a difference. In this case, we will run a full factorial design rather than just the RCBD that we ran in our lab 5. The goal of this final project is to determine whether or not a paperclip affects the distance a paper airplane travels. We take this a step further and consider multiple factors. Previously we only observed whether a paper airplane had the paperclip on its nose, rear, or none at all. However we were not able to have more than one paperclip on the paper airplane at a time. In this case, we have three different locations where the paperclip can go on the paper airplane and we are able to have more than one paperclip on the paper airplane at a time. For the purpose of this study, I will be utilizing pilot study for data collection. The significance of performing a pilot study is described in the article The importance of pilot studies by Hundley V. Teijilngen (Hundley V. Teijilngen, 2002). Pilot studies refers to doing a smaller sample of our study in order to determine if there are any faults in our modeling. It is important to do a pilot study prior to the main study because although it does not guarantee success, it increases the likelihood of success in our study. The primary goal of this study is to determine whether the presence and placement of paperclips on a paper airplane significantly affects how far it flies. This approach allows me to examine not only the individual effects of each paperclip placement, but it also allows us to examine the combinations of placements interact to affect the flight distance. By using a full factorial design and pilot testing procedures beforehand, we aim to gather reliable evidence about how these small modifications influence aerodynamic performance.
+
+## Methods
+
+The process of data collection in this study occurred across all of the factorial treatment combinations. The code directly below shows the randomization of the trials that were performed, with all of the combinations of possibilities for the treatments. The different numbers in the randomization stand for yes or no, 1 being yes, and 0 being no. The order of the numbers after the names are nose, middle, rear. This makes it a lot simpler to put in the data into the randomization. For this study, we could either have no paperclips on the paper airplanes, three paperclips, or a combination of some parts having paper clips and others not having a paperclip. In total there are 8 possible combinations of the paper airplane and the paperclips. Each treatment is represented by a three digit code, therefore the eight possible treatment combinations are 000, 001, 010, 011, 100, 101, 110, and 111. These combinations reflect every possible configuration of clip placement.Prior to starting our data collection, we conduct a pilot study. A pilot study is a preliminary study that allows us to test the logistics and identify any possible issues that could be in the design of our data collection. Therefore we would refine the design if there were any issues that appeared in our study. In this study, no key issues were identified while carrying out the pilot study. For the pilot study, 24 trials were conducted. The code below allowed me to randomize the trials, the eight conditions three times each. Once I had completed my pilot study, I then continued to the main data collection portion of this experiment.
+
+```{r, results = 'hide'}
+pilot_base <- c("000", "001", "010", "100",  "101", "110", "011", "111")
+
+
+trials <- rep(pilot_base, each = 3)
+
+
+set.seed(101)
+trials <- sample(trials)
+
+print(trials)
+```
+
+```{r}
+treatments <- expand.grid(nose = c(0, 1),
+                          middle = c(0, 1),
+                          rear = c(0, 1))
+trials <- apply(treatments, 1, paste0, collapse = "")
+
+trials <- rep(trials, each = 10)
+
+```
+
+```{r, message = FALSE, warning = FALSE, results = 'hide'}
+set.seed(2) 
+ordered_trials <- sample(trials)
+print(ordered_trials)
+```
+
+I conducted the paper airplane throwing indoors in order to not have the wind be a factor in this study. The study was specifically conducted in the lounge of my building. There were some things in the way, such as the pool table and the ladders that were in there, however I did the study parallel to the pool table instead of perpendicular to decrease the chances of the paper airplane directly crashing into the pool table. The paper airplane that was utilized for this study was the same one throughout, from the pilot study to the entire data collection portion. I utilized a standard 8.5 by 11 inch sheet paper for the paper airplane. Furthermore I reused an old sheet of paper that has text on it. This was especially helpful in putting the paperclip in the exact same places when carrying out the different trials. The words would act as a marker for where the paperclips should go, specifically the middle paper clip that I would place above the word 'insurance'. The main issue with utilizing the same paper airplane is that the paper airplane starts to deteriorate after conducting the trials. This damage would typically occur at the nose of the paper airplane when the paper airplane would land on the floor.
+
+```{r}
+knitr::include_graphics("imgfp.png")
+knitr::include_graphics("imgfp2.png")
+```
+
+For the purpose of this study, I conducted 80 trials. Ten trials for each treatment of the study. This level of replication was chosen to ensure sufficient statistical power for detecting main effects and interactions in the linear regression model. Based on my simulation study, having 10 replicates per treatment provided an optimal balance between resource use and the ability to detect meaningful differences using the linear model approach.
+
+In order to collect the data, I utilized a tape measure that I stretched out on the floor. I also created an excel sheet where I collected my data after every trial. I would throw the paper airplane and measure where it lands. If it slid on the floor, I would only count the distance up to where the paper airplane first landed. I did not have any issues with the paper airplane crashing into anything or flying in the wrong direction.
+
+### Statistical Methods
+
+A three-factor factorial linear regression model was conducted in this study. This approach allowed me to determine the main effects and interaction effects of the three paperclip positions on the distance the paper airplane flew. A visualization utilizing ggplot2 was also utilized in order to display the distribution distances across the different treatment combinations.
+
+### Statistical Assumptions
+
+The factorial linear regression model used in this study relies on key assumptions which are independence of observations, normality of residuals, and homogeneity of variances. The independence assumption was satisfied through the randomization of trials. A more detailed discussion of these assumptions and their assessment, along with the study findings, will be included in the results section below.
+
+$$
+y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \beta_3x_3 + \beta_4x_1x_2 + \beta_5x_1x_3 + \beta_6x_2x_3 + \beta_7x_1x_2x_3
+$$
+
+-   $x_1$ : the presence of a paperclip on the nose
+-   $x_2$ : the presence of a paperclip on the middle
+-   $x_3$ : the presence of a paperclip on the rear
+
+\begin{flushleft}
+\begin{align}
+H_0 &: \text{Different treatments do not make a difference on the flight distance} \\
+H_A &: \text{At least one combination of factors makes a difference on the flight distance}
+\end{align}
+\end{flushleft}
+\begin{flushleft}
+\begin{align}
+H_0 &: \beta_{1} = \beta_{2} = \beta_{3} = \beta_{4} = \beta_{5} = \beta_{6} = \beta_{7} \\
+H_A &: \text{At least one} \ \beta \ \text{is different}
+\end{align}
+\end{flushleft}
+
+## Results
+
+```{r, message = FALSE, warning = FALSE}
+library(readxl)
+airplane <- read_excel("apaper.xlsx")
+
+set.seed(2262025)
+source("power_factorial_23.R")
+library(ggplot2)
+
+beta_mean <- c(112.5, -15.02, -4.015, -15.67, -12.67, -9.624, -12.56, -7.099)
+replicates <- 2:10
+
+
+beta_se <- rep(25, 8)
+power1 <- NA
+for(i in 1: length(replicates)){
+  power1[i] <- power_factorial_23(beta_mean, beta_se, replicates[i])
+}
+
+
+beta_se <- rep(15, 8)
+power2 <- NA
+for(i in 1: length(replicates)){
+  power2[i] <- power_factorial_23(beta_mean, beta_se, replicates[i])
+}
+
+
+
+beta_se <- rep(20, 8)
+power3 <- NA
+for(i in 1: length(replicates)){
+  power3[i] <- power_factorial_23(beta_mean, beta_se, replicates[i])
+}
+
+
+all_power <- data.frame(
+  power = c(power1, power2, power3),
+  beta_se = c(rep("1", length(power1)),
+              rep("0.5", length(power2)),
+              rep("2", length(power3))),
+  replicates = rep(replicates, 3)
+)
+
+ggplot(data=all_power, mapping = aes(x=replicates, y = power, 
+                                     group=beta_se, color = beta_se)) +
+  geom_point() + geom_line()
+
+```
+
+A simulation study was conducted to determine the appropriate number of replicates needed to achieve sufficient statistical power to detect meaningful effects in the linear model.
+
+Based on this analysis, the decision to use 10 replicates per treatment in this study provides a high probability of detecting moderate to large effects and reasonable power for smaller effects.
+
+```{r}
+library(ggplot2)
+airplane$nose <- factor(airplane$nose)
+airplane$middle <- factor(airplane$middle)
+airplane$rear <- factor(airplane$rear)
+
+airplane$treatment <- paste0(airplane$nose, airplane$middle, airplane$rear)
+airplane$treatment <- factor(airplane$treatment)
+
+
+ggplot(data = airplane, aes(x = treatment, y = distance, fill = treatment)) +
+  geom_boxplot() +
+  ggtitle("Flight Distance by Paperclip Treatment") +
+  xlab("Treatment (Nose-Middle-Rear)") +
+  ylab("Flight Distance")
+
+```
+
+The boxplot shown above demonstrates the variation in flight distances across the different paperclip treatments. The x axis shows the different treatment groups of this study. To reiterate, the 0 indicates the absence of the paperclip and the 1 indicates that a paperclip is present on that part of the paper airplane.
+
+-   Treatment 000 (no clips) : This treatment has higher and more consistent flight distances in general
+
+-   Treatment 001 (rear clip only) : This treatment shows a large spread in the flight distances with lower median values and outliers on the lower end. This suggests that having a paperclip on the rear only may negatively impact flight performance.
+
+-   Treatment 010 (middle clip only) : This appear to have medians in the middle range and moderate variability.
+
+-   Treatment 011 (middle and rear clip) : This treatment has lower median flight distances and wider variability, therefore implying that this treatment combination may reduce aerodynamic efficiency
+
+-   Treatment 100 (nose clip only) : This treatment has mid range medians and moderate variance.
+
+-   Treatment 101 (nose and rear clip) : This treatment shows moderate median flight distance compared to the other treatment groups. The spread of the distances is fairly wide, which suggests inconsistency in flight performance.
+
+-   Treatment 110 (nose and middle clip) : Much like treatment 011, this treatment has lower median flight distances and higher variance, which implies that this treatment may reduce aerodynamic efficiency.
+
+-   Treatment 111 (all clips) : This has higher median distances, however this treatment group as has high variance.
+
+```{r}
+ggplot(data = airplane, mapping = aes(x = nose, y = distance, color = middle)) +
+  geom_jitter(width = 0.1, height = 0) +
+  facet_grid(cols = vars(rear),
+             labeller = labeller(rear = c("0" = "No Rear Clip", "1" = "Rear Clip"))) +
+  ggtitle("Airplane Distance by Paperclip Positions") +
+  scale_x_discrete(name = "Nose Clip",
+                   labels = c("0" = "No Nose Clip", "1" = "Nose Clip")) +
+  scale_color_discrete(name = "Middle Clip",
+                       labels = c("0" = "No Middle Clip", "1" = "Middle Clip"))
+```
+
+I have also created a scatter plot for this study with jitter. This shows us how the flight distances vary depending on the presence or absence of paperclips at the nose, middle, and rear position. Each point represents a single flight trial, and the jitter function allows us to see the overlapping points.
+
+This scatter plot shows that plane with a rear clip generally had greater flight distanced compared to those without a rear clip. In the boxplot however, the paper airplane that has only the rear paperclip performed worse.
+
+The scatter plot also reveals that the presence of a nose clip appears to slightly reduce distance in some cases, especially without the rear clip. This may be due to the paper airplane deteriorating over time, especially at the nose of the plane.
+
+The middle paperclip placement effect is less obvious, but this suggests that the presence of a middle clip may lead to slightly shorter flight distances, especially when combined with other clips.
+
+The variability within each clip treatment group indicates that there are factors beyond paperclip placement may influence flight distance. In essence, the results from the scatter plot suggest that the rear clip provides the most consistent improvement in flight distance, whereas the middle and nose clip may reduce the flight distance or have minimal impact. However, the variability remains high across trials, indicating the need for further analysis or model checking.
+
+### Model Checking
+
+```{r, message = FALSE, warning = FALSE}
+model <- lm(distance ~ treatment + trial, data = airplane)
+output <- signif(summary(model)$coefficients, 4)
+output[,] <- as.character(output[,])
+knitr::kable(output)
+```
+
+To further understand the impact of the treatments and trial number on the distance the paper airplane flies, I fitted a linear model using distance \~ treatment + trial. The results of the model are summarized in the table above.
+
+-   Treatment 001 (rear only) and treatment 011 (middle and rear) resulted in significantly lower distances by approximately 15.02 and 15.67 inches respectively. Therefore p = 0.01549 and p = 0.01157 respectively.
+
+-   Treatment 100 (nose only) and treatment 110 (nose and middle clip) showed significant reductions in distance of 12.67 and 12.56 inches respectively. Therefore suggesting that the paperclips on the nose van negatively impact flight distance.
+
+-   Treatment 010 (middle only), 101 (nose and rear clips), and 111 (all clips) did not show statistically significant differences compared to treatment 000 (no paper clips), however there was still indication of worsened performance with this configurations.
+
+```{r, fig.show="hold", out.width="50%", message = FALSE, warning = FALSE}
+hist(model$residuals, xlab="residuals", main="airplane")
+qqnorm(model$residuals)
+qqline(model$residuals)
+```
+
+To determine whether or not the residuals of the linear model satisfy the normality assumption, I created both a histogram and a normal Q-Q plot of the residuals. The histogram of residuals appears roughly symmetric, but there is some noticeable spread, with a bit of skew to the left. The Q-Q plot also reveals deviations from the normal line, especially in the tails which suggests slight possible deviations from normality.
+
+Shapiro-Wilk test
+
+```{r, message = FALSE, warning = FALSE}
+library(knitr)
+shap_test <- shapiro.test(model$residuals)
+shap_df <- data.frame(
+  stat = shap_test$statistic,
+  p_val = shap_test$p.value
+)
+kable(shap_df, digits = 5, caption = "Shapiro-Wilk Normality Test")
+```
+
+In order to test the normality assumption, I conducted a Shapiro-Wilk normality test. The test returned a W statistic of 0.96691 and a p-value of 0.03615. Since this p-value is less than the typical significance level of 0.05, we have statistical evidence to reject the null hypothesis of normality. Therefore this suggests that the residuals may not be perfectly normally distributed.
+
+Structure of the data:
+
+```{r, message = FALSE, warning = FALSE, fig.show="hold", out.width="75%"}
+x <- 1:length(model$residuals)
+plot(model$residuals ~ x, xlab = "order", ylab = "residuals",
+     main="Structure of residuals")
+
+```
+
+The plot shows the residuals scattered randomly around zero with no apparent pattern. This suggests that the residuals are independent and there is no obvious correlation present in the data over time.
+
+Equality of variances:
+
+```{r, message = FALSE, warning = FALSE, fig.show="hold", out.width="75%"}
+plot(model$residuals ~ model$fitted.values, xlab = "fitted values", ylab = "residuals",
+     main = "Residuals vs Fitted values")
+
+```
+
+This plot is used to assess the assumption of homoscedasticity. In our plot, the residuals appear to be spread fairly evenly across the range of fitted values. This shows that the variance of the residuals is roughly constant and supports the assumption of homoscedasticity. Additionally, the residuals are centered around zero, which suggests that the model does not show strong bias in its predictions.
+
+```{r, warning = FALSE, message = FALSE}
+library(knitr)
+set.seed(1234567)
+perm_t <- NA
+reps <- 10000
+range <- 2:8
+pval_mat <- matrix(NA, nrow = 1, ncol = 7)
+rownames(pval_mat) <- c("p-value")
+colnames(pval_mat) <- c("nose1", "middle1", "rear1", 
+                        "nose1:middle1", "nose1:rear1",
+                        "middle1:rear1", "nose1:middle1:rear1")
+
+for(j in range) {
+  for(i in 1:reps) {
+    perm_data <- airplane
+    perm_data$distance <- sample(perm_data$distance)
+    perm_t[i] <- summary(lm(distance ~ nose*middle*rear, data = perm_data))$coefficient[j, 3]
+    
+  }
+  pval_mat[1, j-1] <- sum(abs(perm_t) >= abs(summary(model)$coefficient[j, 3]))/reps
+}
+kable(pval_mat)
+```
+
+Overall, the results suggest that paperclips placed on the nose and rear significantly impact the flight distance, with some interaction effects involving the middle clip. The middle clip alone does not significantly alter flight distance. These findings highlight the importance of clip placement on the airplane’s aerodynamics and performance.
+
+## Discussion
+
+The aim of this study was to determine how the presence and placement of paperclips on paper affects the flight distance. This is determined through utilizing a full factorial design with three different placement locations. Those locations being the nose of the plane, the middle of the plane, and the rear of the plane. Based on the pilot study that I conducted, I aimed to investigate the individual and joint effects of the paper clip placements through statistical modeling and analysis.
+
+The results of the linear regression model suggested that several paperclip treatments, such as 100, 001, and 011 had statistically significant negative effects on flight distance when compared to the paper airplane that did not have any paperclips. However some treatments such as 010, 101, and 111 did not show statistically significant differences regardless of slight negative effect estimates. This indicates that certain placements reduce the flight distance.
+
+Regardless of the meaningful findings, there are limitations to be addressed. For starters, out data shows slight non normality within the residuals. The Shapiro-Wilk test gave us the p-value of 0.0405, therefore showing a slight deviance from the normality assumption for linear models. Though not a huge difference, this could still affect the p-values and the confidence intervals.
+
+The permutation p-values generally supported the regression results, showing significant effects for paperclips placed on the nose and rear, as well as some interactions involving these positions. This reinforces the conclusion that paperclip placement has a meaningful impact on flight distance. The use of permutation tests adds robustness to the analysis, particularly given the slight deviation from normality observed in the residuals.
+
+These findings may offer insight into basic aerodynamic principles. Understanding how weight distribution affects flight can also serve as an accessible analogy for more complex engineering challenges, such as aircraft design. Future research could explore how other factors, such as different paper types, wing designs, or the number of paperclips, influence flight distances. By combining controlled experimentation with statistical analysis, this study provides a foundation for both classroom learning and more sophisticated investigations into flight mechanics.
+
+## References
+
+Simon S. The Paper Aeroplane Book. Kestrel Books; 1971.
+
+Ng BF, Kng QM, Pey YY, Schluter J. On the aerodynamics of paper airplanes. In27th AIAA applied aerodynamics conference 2009 Jun (p. 3958).
+
+Van Teijlingen E, Hundley V. The importance of pilot studies. Nursing Standard (through 2013). 2002 Jun 19;16(40):33.
+
+Shyy W, Aono H, Chimakurthi SK, Trizila P, Kang CK, Cesnik CE, Liu H. Recent progress in flapping wing aerodynamics and aeroelasticity. Progress in Aerospace Sciences. 2010 Oct 1;46(7):284-327.
